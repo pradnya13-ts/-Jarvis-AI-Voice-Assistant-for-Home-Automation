@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>JARVIS Launch</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
+      background: radial-gradient(ellipse at center, #000 0%, #0a0f13 100%);
+      font-family: 'Orbitron', sans-serif;
+      overflow: hidden;
+    }
+
+    .screen {
+      position: absolute;
+      top: 0; left: 0;
+      height: 100%;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      transition: opacity 1s ease;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* --- Intro Screen --- */
+    #introScreen img {
+      width: 100%;
+      max-width: 530px;
+      height: auto;
+      animation: fadeIn 2s ease forwards;
+    }
+
+    #startBtn {
+      background: transparent;
+      border: 3px solid cyan;
+      color: cyan;
+      font-size: 22px;
+      padding: 16px 32px;
+      margin-top: 30px;
+      border-radius: 50px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 0 20px cyan, inset 0 0 10px cyan;
+      animation: pulseBtn 2s infinite;
+      z-index: 2;
+      transition: all 0.3s ease;
+    }
+
+    #startBtn:hover {
+      background: cyan;
+      color: black;
+      transform: scale(1.05);
+      box-shadow: 0 0 25px cyan, inset 0 0 15px #000;
+    }
+
+    /* --- Arc Reactor Screen --- */
+    #statusText {
+      font-size: 34px;
+      color: cyan;
+      text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffffaa;
+      margin-bottom: 20px;
+      animation: fadeInText 2s ease forwards;
+    }
+
+    .reactor-container {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: auto;
+    }
+
+    .scanner-bar {
+      position: absolute;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(to right, transparent, cyan, transparent);
+      top: 50%;
+      animation: scan 2s linear infinite;
+      opacity: 0.7;
+    }
+
+    @keyframes scan {
+      0% { transform: translateY(-100px); }
+      100% { transform: translateY(100px); }
+    }
+
+    .arc-reactor {
+      width: 400px;
+      max-width: 90vw;
+      height: auto;
+      z-index: 1;
+    }
+
+    #detectBtn {
+      background: #00ffff;
+      border: none;
+      padding: 16px 36px;
+      font-size: 20px;
+      border-radius: 12px;
+      color: #000;
+      cursor: pointer;
+      box-shadow: 0 0 20px cyan;
+      transition: transform 0.2s;
+      margin-top: 40px;
+    }
+
+    #detectBtn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 30px cyan;
+    }
+
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: scale(0.9); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes pulseBtn {
+      0% { box-shadow: 0 0 15px cyan; }
+      50% { box-shadow: 0 0 30px cyan; }
+      100% { box-shadow: 0 0 15px cyan; }
+    }
+
+    @keyframes fadeInText {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      #introScreen img {
+        width: 70%;
+      }
+
+      #startBtn {
+        font-size: 16px;
+        padding: 12px 24px;
+      }
+
+      #statusText {
+        font-size: 26px;
+        text-align: center;
+        margin: 20px;
+      }
+
+      .arc-reactor {
+        width: 280px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Intro Screen -->
+  <div id="introScreen" class="screen">
+    <img src="/Static/jarv1.png" alt="Jarvis Logo">
+    <button id="startBtn" onclick="launchJarvis()">▶ Launch JARVIS</button>
+  </div>
+
+  <!-- Arc Reactor Screen -->
+  <div id="arcScreen" class="screen hidden">
+    <div id="statusText">JARVIS IS ONLINE</div>
+    <div class="reactor-container">
+      <div class="scanner-bar"></div>
+      <img src="/Static/jarv arc.png" class="arc-reactor" alt="Arc Reactor">
+    </div>
+    <button id="detectBtn" onclick="detectObject()">Detect Object</button>
+  </div>
+
+  <script>
+    function speak(text) {
+      const utterance = new SpeechSynthesisUtterance(text);
+      const voices = speechSynthesis.getVoices();
+      utterance.voice = voices.find(v => v.name.includes("Google") || v.name.includes("Microsoft")) || null;
+      utterance.rate = 1;
+      utterance.pitch = 1.1;
+      speechSynthesis.speak(utterance);
+    }
+
+    function launchJarvis() {
+      document.getElementById("introScreen").classList.add("hidden");
+      document.getElementById("arcScreen").classList.remove("hidden");
+
+      setTimeout(() => {
+        speak("");
+
+        fetch("/start-jarvis")
+          .then(res => res.text())
+          .then(msg => console.log("Jarvis started:", msg))
+          .catch(err => console.error("Failed to start Jarvis:", err));
+      }, 700);
+    }
+
+    function detectObject() {
+      fetch("/detect-objects")
+        .then(res => res.text())
+        .then(msg => {
+          console.log("Detection:", msg);
+          alert(msg);
+        })
+        .catch(err => {
+          console.error("Detection error:", err);
+          alert("Object detection failed.");
+        });
+    }
+
+    // Chrome fix for voices
+    window.speechSynthesis.onvoiceschanged = () => {};
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
