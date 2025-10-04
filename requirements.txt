@@ -1,0 +1,40 @@
+# Core AI & Voice
+speechrecognition==3.10.4
+pyttsx3==2.90
+pyaudio==0.2.14
+winsound ; platform_system == "Windows"
+
+# Web Interface
+flask==3.0.3
+gunicorn==22.0.0
+
+# Object Detection (YOLOv8)
+ultralytics==8.2.50
+opencv-python==4.10.0.84
+torch==2.3.1
+torchvision==0.18.1
+
+# Data & Utilities
+numpy==1.26.4
+pandas==2.2.2
+requests==2.32.3
+
+# Home Automation (optional for Raspberry Pi)
+gpiozero==1.6.2 ; platform_system == "Linux"
+paho-mqtt==1.6.1
+
+# WhatsApp Messaging
+pywhatkit==5.4
+
+# Task Scheduling
+schedule==1.2.1
+
+# Audio & Verification
+sounddevice==0.4.6
+scipy==1.13.1
+
+# Machine Learning / Voice Embedding (optional)
+scikit-learn==1.5.2
+
+# Miscellaneous
+matplotlib==3.9.2
